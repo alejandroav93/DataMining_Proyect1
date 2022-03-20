@@ -1,0 +1,21 @@
+---
+title: "Proyecto1_MineriaDatos"
+author: "Alejandro Alvarez"
+date: "3/20/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+ 
+```{r library/package import, warning=FALSE}
+install.packages('haven')
+library(haven)
+
+```
+ 
+```{r}
+data <- read_sav('C:/Users/bob/Downloads/healthdata.sav')
+```
+
