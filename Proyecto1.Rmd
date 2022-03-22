@@ -1,7 +1,7 @@
 ---
 title: "Proyecto1_MineriaDatos"
 author: "Alejandro Alvarez"
-date: "3/20/2022"
+date: "3/25/2022"
 output: html_document
 ---
 
@@ -11,83 +11,92 @@ knitr::opts_chunk$set(echo = TRUE)
  
 Se importan las librerías y paquetes necesarios para procesar, graficar y ordenar los datos de las bases de datos
 ```{r library/package import, warning=FALSE, message=FALSE}
-install.packages('haven')
+#install.packages('haven')
 library(haven)
 library(dplyr)
 library(tidyverse)
 
 ```
- 
+
+#PUEDE SALTARSE A IMPORTACION DE BASE DE DATOS UNIFICADA# 
 Se importan las bases de datos de 2010 - 2019 [10 en total] de sus respectivos archivos de SPSS. Se agregaron datos faltantes y se restructuran nombres para que tengan los mismos nombres de columnas
 ```{r importación de datasets}
+data2009 <- read_sav('./db/2009.sav')
+names(data2009)<-toupper(names(data2009))
+data2009 <- data.frame(append(data2009, c(VIAPAR=1), after=13))
+data2009 <- data.frame(append(data2009, c(PASIREM=9999), after=16))
+data2009 <- data.frame(append(data2009, c(PUEBLOPM=9), after=19))
+data2009 <- data.frame(append(data2009, c(ESCOLAM=9), after=23))
+data2009 <- data.frame(append(data2009, c(CIUOMAD='IGNORADO'), after=24))
+data2009 <- select(data2009, -AÑOREG)
+data2009 <- data.frame(append(data2009, c(AÑOREG=2009), after=3))
+data2009
 data2010 <- read_sav('./db/2010.sav')
 names(data2010)<-toupper(names(data2010))
 data2010 <- data.frame(append(data2010, c(PAISREM=9999), after=16))
 data2010 <- data.frame(append(data2010, c(PUEBLOPM=9), after=19))
 data2010 <- data.frame(append(data2010, c(CIUOMAD='IGNORADO'), after=24))
-data2010
 data2011 <- read_sav('./db/2011.sav')
 names(data2011)<-toupper(names(data2011))
 data2011 <- data.frame(append(data2011, c(PAISREM=9999), after=16))
 data2011 <- data.frame(append(data2011, c(PUEBLOPM=9), after=19))
 data2011 <- data.frame(append(data2011, c(CIUOMAD='IGNORADO'), after=24))
-data2011
 data2012 <- read_sav('./db/2012.sav')
 names(data2012)<-toupper(names(data2012))
 data2012 <- data.frame(append(data2012, c(AÑOOCU=2012), after=10))
 data2012 <- data.frame(append(data2012, c(PUEBLOPM=9), after=19))
 data2012 <- data.frame(append(data2012, c(CIUOMAD='IGNORADO'), after=24))
-data2012
 data2013 <- read_sav('./db/2013.sav')
 names(data2013)<-toupper(names(data2013))
+data2013$CIUOMAD <- as.character(data2013$CIUOMAD) 
 data2013 <- data.frame(append(data2013, c(AÑOOCU=2013), after=10))
 data2013 <- data.frame(append(data2013, c(GRETNM=9), after=20))
 data2013 <- data.frame(append(data2013, c(OCUPAM=9999), after=25))
-data2013
 data2014 <- read_sav('./db/2014.sav')
 names(data2014)<-toupper(names(data2014))
 data2014 <- data.frame(append(data2014, c(AÑOOCU=2014), after=10))
 data2014 <- data.frame(append(data2014, c(GRETNM=9), after=20))
 data2014 <- data.frame(append(data2014, c(OCUPAM=9999), after=25))
-data2014
 data2015 <- read_sav('./db/2015.sav')
 names(data2015)<-toupper(names(data2015))
 data2015 <- data2015 %>% rename(NACIOM = NACIONM)
 data2015$CIUOMAD <- as.character(data2015$CIUOMAD) 
 data2015 <- data.frame(append(data2015, c(GRETNM=9), after=20))
 data2015 <- data.frame(append(data2015, c(OCUPAM=9999), after=25))
-data2015
 data2016 <- read_sav('./db/2016.sav')
 names(data2016)<-toupper(names(data2016))
 data2016 <- data2016 %>% rename(NACIOM = NACIONM)
 data2016 <- data.frame(append(data2016, c(GRETNM=9), after=20))
 data2016 <- data.frame(append(data2016, c(OCUPAM=9999), after=25))
-data2016
 data2017 <- read_sav('./db/2017.sav')
 names(data2017)<-toupper(names(data2017))
 data2017 <- data2017 %>% rename(NACIOM = NACIONM)
 data2017 <- data.frame(append(data2017, c(GRETNM=9), after=20))
 data2017 <- data.frame(append(data2017, c(OCUPAM=9999), after=25))
-data2017
 data2018 <- read_sav('./db/2018.sav')
 names(data2018)<-toupper(names(data2018))
 data2018 <- data2018 %>% rename(NACIOM = NACIONM)
 data2018 <- data.frame(append(data2018, c(AREAG=9), after=6))
 data2018 <- data.frame(append(data2018, c(GRETNM=9), after=20))
 data2018 <- data.frame(append(data2018, c(OCUPAM=9999), after=25))
-data2018
 data2019 <- read_sav('./db/2019.sav')
 names(data2019)<-toupper(names(data2019))
 data2019 <- data2019 %>% rename(NACIOM = NACIONM)
 data2019 <- data.frame(append(data2019, c(AREAG=9), after=6))
 data2019 <- data.frame(append(data2019, c(GRETNM=9), after=20))
 data2019 <- data.frame(append(data2019, c(OCUPAM=9999), after=25))
-data2019
+data2020 <- read_sav('./db/2020.sav')
+names(data2020)<-toupper(names(data2020))
+data2020 <- data2020 %>% rename(NACIOM = NACIONM)
+data2020 <- data.frame(append(data2020, c(AREAG=9), after=6))
+data2020 <- data.frame(append(data2020, c(GRETNM=9), after=20))
+data2020 <- data.frame(append(data2020, c(OCUPAM=9999), after=25))
 ```
 
-
+Se realiza la unión de todas las bases de datos en una sola tabla
 ```{r join del set de datos completo,  warning=FALSE, message=FALSE}
-datatotal <- full_join(data2010, data2011)
+datatotal <- full_join(data2009, data2010)
+datatotal <- full_join(datatotal, data2011)
 datatotal <- full_join(datatotal, data2012)
 datatotal <- full_join(datatotal, data2013)
 datatotal <- full_join(datatotal, data2014)
@@ -96,12 +105,25 @@ datatotal <- full_join(datatotal, data2016)
 datatotal <- full_join(datatotal, data2017)
 datatotal <- full_join(datatotal, data2018)
 datatotal <- full_join(datatotal, data2019)
+datatotal <- full_join(datatotal, data2020)
 ```
 
 Se realiza un resumen del set de datos y se exporta la base de datos completa a un .CSV para su facil manejo con el resto del equipo
 ```{r resumen del set de datos completo unificado }
-datatotal
 summary (datatotal)
 write.csv(datatotal, "./db/database.csv", row.names=FALSE)
+```
+
+Se importa una nueva tabla desde el nuevo archivo CSV 
+```{r importación base de datos unificada}
+database <- read.csv("./db/database.csv", stringsAsFactors = F)
+```
+
+
+
+```{r}
+
+data2020
+
 ```
 
