@@ -177,61 +177,97 @@ library(haven)
 library(dplyr)
 library(tidyverse)</code></pre>
 <p>#PUEDE SALTARSE A IMPORTACION DE BASE DE DATOS UNIFICADA# Se importan las bases de datos de 2010 - 2019 [10 en total] de sus respectivos archivos de SPSS. Se agregaron datos faltantes y se restructuran nombres para que tengan los mismos nombres de columnas</p>
-<pre class="r"><code>data2010 &lt;- read_sav(&#39;./db/2010.sav&#39;)
+<pre class="r"><code>data2009 &lt;- read_sav(&#39;./db/2009.sav&#39;)
+names(data2009)&lt;-toupper(names(data2009))
+data2009 &lt;- data.frame(append(data2009, c(VIAPAR=1), after=13))
+data2009 &lt;- data.frame(append(data2009, c(PASIREM=9999), after=16))
+data2009 &lt;- data.frame(append(data2009, c(PUEBLOPM=9), after=19))
+data2009 &lt;- data.frame(append(data2009, c(ESCOLAM=9), after=23))
+data2009 &lt;- data.frame(append(data2009, c(CIUOMAD=&#39;IGNORADO&#39;), after=24))
+data2009 &lt;- select(data2009, -AÑOREG)
+data2009 &lt;- data.frame(append(data2009, c(AÑOREG=2009), after=3))
+data2009 &lt;- select(data2009, -AÑOOCU)
+data2009 &lt;- data.frame(append(data2009, c(AÑOOCU=2009), after=10))
+data2009$EDADM[data2009$EDADM == 999] &lt;- 99
+data2010 &lt;- read_sav(&#39;./db/2010.sav&#39;)
 names(data2010)&lt;-toupper(names(data2010))
 data2010 &lt;- data.frame(append(data2010, c(PAISREM=9999), after=16))
 data2010 &lt;- data.frame(append(data2010, c(PUEBLOPM=9), after=19))
 data2010 &lt;- data.frame(append(data2010, c(CIUOMAD=&#39;IGNORADO&#39;), after=24))
+data2010$DEPREM[data2010$DEPREM == 9999] &lt;- 99
+data2010$EDADM[data2010$EDADM == 999] &lt;- 99
 data2011 &lt;- read_sav(&#39;./db/2011.sav&#39;)
 names(data2011)&lt;-toupper(names(data2011))
 data2011 &lt;- data.frame(append(data2011, c(PAISREM=9999), after=16))
 data2011 &lt;- data.frame(append(data2011, c(PUEBLOPM=9), after=19))
 data2011 &lt;- data.frame(append(data2011, c(CIUOMAD=&#39;IGNORADO&#39;), after=24))
+data2011$DEPREM[data2011$DEPREM == 9999] &lt;- 99
+data2011$EDADM[data2011$EDADM == 999] &lt;- 99
 data2012 &lt;- read_sav(&#39;./db/2012.sav&#39;)
 names(data2012)&lt;-toupper(names(data2012))
 data2012 &lt;- data.frame(append(data2012, c(AÑOOCU=2012), after=10))
 data2012 &lt;- data.frame(append(data2012, c(PUEBLOPM=9), after=19))
 data2012 &lt;- data.frame(append(data2012, c(CIUOMAD=&#39;IGNORADO&#39;), after=24))
+data2012$DEPREM[data2012$DEPREM == 9999] &lt;- 99
+data2012$EDADM[data2012$EDADM == 999] &lt;- 99
 data2013 &lt;- read_sav(&#39;./db/2013.sav&#39;)
 names(data2013)&lt;-toupper(names(data2013))
+data2013$CIUOMAD &lt;- as.character(data2013$CIUOMAD) 
 data2013 &lt;- data.frame(append(data2013, c(AÑOOCU=2013), after=10))
 data2013 &lt;- data.frame(append(data2013, c(GRETNM=9), after=20))
 data2013 &lt;- data.frame(append(data2013, c(OCUPAM=9999), after=25))
+data2013$DEPREM[data2013$DEPREM == 9999] &lt;- 99
+data2013$EDADM[data2013$EDADM == 999] &lt;- 99
 data2014 &lt;- read_sav(&#39;./db/2014.sav&#39;)
 names(data2014)&lt;-toupper(names(data2014))
 data2014 &lt;- data.frame(append(data2014, c(AÑOOCU=2014), after=10))
 data2014 &lt;- data.frame(append(data2014, c(GRETNM=9), after=20))
 data2014 &lt;- data.frame(append(data2014, c(OCUPAM=9999), after=25))
+data2014$DEPREM[data2014$DEPREM == 9999] &lt;- 99
+data2014$EDADM[data2014$EDADM == 999] &lt;- 99
 data2015 &lt;- read_sav(&#39;./db/2015.sav&#39;)
 names(data2015)&lt;-toupper(names(data2015))
 data2015 &lt;- data2015 %&gt;% rename(NACIOM = NACIONM)
 data2015$CIUOMAD &lt;- as.character(data2015$CIUOMAD) 
 data2015 &lt;- data.frame(append(data2015, c(GRETNM=9), after=20))
 data2015 &lt;- data.frame(append(data2015, c(OCUPAM=9999), after=25))
+data2015$EDADM[data2015$EDADM == 999] &lt;- 99
 data2016 &lt;- read_sav(&#39;./db/2016.sav&#39;)
 names(data2016)&lt;-toupper(names(data2016))
 data2016 &lt;- data2016 %&gt;% rename(NACIOM = NACIONM)
 data2016 &lt;- data.frame(append(data2016, c(GRETNM=9), after=20))
 data2016 &lt;- data.frame(append(data2016, c(OCUPAM=9999), after=25))
+data2016$EDADM[data2016$EDADM == 999] &lt;- 99
 data2017 &lt;- read_sav(&#39;./db/2017.sav&#39;)
 names(data2017)&lt;-toupper(names(data2017))
 data2017 &lt;- data2017 %&gt;% rename(NACIOM = NACIONM)
 data2017 &lt;- data.frame(append(data2017, c(GRETNM=9), after=20))
 data2017 &lt;- data.frame(append(data2017, c(OCUPAM=9999), after=25))
+data2017$EDADM[data2017$EDADM == 999] &lt;- 99
 data2018 &lt;- read_sav(&#39;./db/2018.sav&#39;)
 names(data2018)&lt;-toupper(names(data2018))
 data2018 &lt;- data2018 %&gt;% rename(NACIOM = NACIONM)
 data2018 &lt;- data.frame(append(data2018, c(AREAG=9), after=6))
 data2018 &lt;- data.frame(append(data2018, c(GRETNM=9), after=20))
 data2018 &lt;- data.frame(append(data2018, c(OCUPAM=9999), after=25))
+data2018$EDADM[data2018$EDADM == 999] &lt;- 99
 data2019 &lt;- read_sav(&#39;./db/2019.sav&#39;)
 names(data2019)&lt;-toupper(names(data2019))
 data2019 &lt;- data2019 %&gt;% rename(NACIOM = NACIONM)
 data2019 &lt;- data.frame(append(data2019, c(AREAG=9), after=6))
 data2019 &lt;- data.frame(append(data2019, c(GRETNM=9), after=20))
-data2019 &lt;- data.frame(append(data2019, c(OCUPAM=9999), after=25))</code></pre>
+data2019 &lt;- data.frame(append(data2019, c(OCUPAM=9999), after=25))
+data2019$EDADM[data2019$EDADM == 999] &lt;- 99
+data2020 &lt;- read_sav(&#39;./db/2020.sav&#39;)
+names(data2020)&lt;-toupper(names(data2020))
+data2020 &lt;- data2020 %&gt;% rename(NACIOM = NACIONM)
+data2020 &lt;- data.frame(append(data2020, c(AREAG=9), after=6))
+data2020 &lt;- data.frame(append(data2020, c(GRETNM=9), after=20))
+data2020 &lt;- data.frame(append(data2020, c(OCUPAM=9999), after=25))
+data2020$EDADM[data2020$EDADM == 999] &lt;- 99</code></pre>
 <p>Se realiza la unión de todas las bases de datos en una sola tabla</p>
-<pre class="r"><code>datatotal &lt;- full_join(data2010, data2011)
+<pre class="r"><code>datatotal &lt;- full_join(data2009, data2010)
+datatotal &lt;- full_join(datatotal, data2011)
 datatotal &lt;- full_join(datatotal, data2012)
 datatotal &lt;- full_join(datatotal, data2013)
 datatotal &lt;- full_join(datatotal, data2014)
@@ -239,76 +275,244 @@ datatotal &lt;- full_join(datatotal, data2015)
 datatotal &lt;- full_join(datatotal, data2016)
 datatotal &lt;- full_join(datatotal, data2017)
 datatotal &lt;- full_join(datatotal, data2018)
-datatotal &lt;- full_join(datatotal, data2019)</code></pre>
+datatotal &lt;- full_join(datatotal, data2019)
+datatotal &lt;- full_join(datatotal, data2020)</code></pre>
 <p>Se realiza un resumen del set de datos y se exporta la base de datos completa a un .CSV para su facil manejo con el resto del equipo</p>
 <pre class="r"><code>summary (datatotal)</code></pre>
 <pre><code>##      DEPREG          MUPREG              MESREG           AÑOREG    
-##  Min.   : 1.000   Length:31228       Min.   : 1.000   Min.   :2010  
-##  1st Qu.: 2.000   Class :character   1st Qu.: 3.000   1st Qu.:2012  
+##  Min.   : 1.000   Length:36767       Min.   : 1.000   Min.   :2009  
+##  1st Qu.: 2.000   Class :character   1st Qu.: 3.000   1st Qu.:2011  
 ##  Median : 9.000   Mode  :character   Median : 7.000   Median :2014  
-##  Mean   : 8.746                      Mean   : 6.469   Mean   :2014  
+##  Mean   : 8.696                      Mean   : 6.454   Mean   :2014  
 ##  3rd Qu.:14.000                      3rd Qu.: 9.000   3rd Qu.:2017  
-##  Max.   :22.000                      Max.   :12.000   Max.   :2020  
+##  Max.   :22.000                      Max.   :12.000   Max.   :2021  
 ##                                                                     
 ##      DEPOCU          MUPOCU              AREAG            SEXO      
-##  Min.   : 1.000   Length:31228       Min.   :1.000   Min.   :1.000  
+##  Min.   : 1.000   Length:36767       Min.   :1.000   Min.   :1.000  
 ##  1st Qu.: 2.000   Class :character   1st Qu.:1.000   1st Qu.:1.000  
 ##  Median : 9.000   Mode  :character   Median :1.000   Median :1.000  
-##  Mean   : 8.746                      Mean   :2.714   Mean   :1.509  
-##  3rd Qu.:14.000                      3rd Qu.:2.000   3rd Qu.:2.000  
+##  Mean   : 8.695                      Mean   :3.516   Mean   :1.507  
+##  3rd Qu.:14.000                      3rd Qu.:9.000   3rd Qu.:2.000  
 ##  Max.   :22.000                      Max.   :9.000   Max.   :9.000  
 ##                                                                     
 ##      DIAOCU          MESOCU           AÑOOCU         TIPAR      
-##  Min.   : 1.00   Min.   : 1.000   Min.   :2010   Min.   :1.000  
-##  1st Qu.: 8.00   1st Qu.: 4.000   1st Qu.:2012   1st Qu.:1.000  
+##  Min.   : 1.00   Min.   : 1.000   Min.   :2009   Min.   :1.000  
+##  1st Qu.: 8.00   1st Qu.: 3.000   1st Qu.:2011   1st Qu.:1.000  
 ##  Median :16.00   Median : 7.000   Median :2014   Median :1.000  
-##  Mean   :15.66   Mean   : 6.505   Mean   :2014   Mean   :1.033  
-##  3rd Qu.:23.00   3rd Qu.:10.000   3rd Qu.:2017   3rd Qu.:1.000  
-##  Max.   :31.00   Max.   :12.000   Max.   :2019   Max.   :3.000  
+##  Mean   :15.65   Mean   : 6.485   Mean   :2014   Mean   :1.502  
+##  3rd Qu.:23.00   3rd Qu.: 9.000   3rd Qu.:2017   3rd Qu.:1.000  
+##  Max.   :31.00   Max.   :12.000   Max.   :2020   Max.   :9.000  
 ##                                                                 
-##      CLAPAR          VIAPAR          SEMGES          EDADM       
-##  Min.   :1.000   Min.   :1.000   Min.   : 1.00   Min.   : 10.00  
-##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.:32.00   1st Qu.: 22.00  
-##  Median :1.000   Median :1.000   Median :37.00   Median : 27.00  
-##  Mean   :1.223   Mean   :1.221   Mean   :42.73   Mean   : 60.25  
-##  3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:40.00   3rd Qu.: 34.00  
-##  Max.   :2.000   Max.   :2.000   Max.   :99.00   Max.   :999.00  
+##      CLAPAR          VIAPAR          SEMGES           EDADM      
+##  Min.   :1.000   Min.   :1.000   Min.   :  1.00   Min.   :10.00  
+##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 32.00   1st Qu.:22.00  
+##  Median :1.000   Median :1.000   Median : 37.00   Median :28.00  
+##  Mean   :1.683   Mean   :1.205   Mean   : 75.99   Mean   :34.11  
+##  3rd Qu.:2.000   3rd Qu.:1.000   3rd Qu.: 40.00   3rd Qu.:36.00  
+##  Max.   :9.000   Max.   :2.000   Max.   :999.00   Max.   :99.00  
 ##                                                                  
-##     PAISREM         DEPREM           MUPREM             PUEBLOPM   
-##  Min.   :  84   Min.   :   1.00   Length:31228       Min.   :1.00  
-##  1st Qu.: 320   1st Qu.:   4.00   Class :character   1st Qu.:1.00  
-##  Median : 320   Median :  10.00   Mode  :character   Median :4.00  
-##  Mean   :2691   Mean   :  40.58                      Mean   :4.85  
-##  3rd Qu.: 320   3rd Qu.:  16.00                      3rd Qu.:9.00  
-##  Max.   :9999   Max.   :9999.00                      Max.   :9.00  
-##                                                                    
-##      GRETNM         ESCIVM          NACIOM          ESCOLAM     
-##  Min.   :1.00   Min.   :1.000   Min.   :  32.0   Min.   :1.000  
-##  1st Qu.:9.00   1st Qu.:1.000   1st Qu.: 320.0   1st Qu.:1.000  
-##  Median :9.00   Median :1.000   Median : 320.0   Median :2.000  
-##  Mean   :7.14   Mean   :1.591   Mean   : 534.8   Mean   :2.638  
-##  3rd Qu.:9.00   3rd Qu.:2.000   3rd Qu.: 320.0   3rd Qu.:3.000  
-##  Max.   :9.00   Max.   :9.000   Max.   :9999.0   Max.   :9.000  
-##                                                                 
+##     PASIREM          DEPREM         MUPREM             PUEBLOPM    
+##  Min.   :9999    Min.   : 1.00   Length:36767       Min.   :1.000  
+##  1st Qu.:9999    1st Qu.: 4.00   Class :character   1st Qu.:1.000  
+##  Median :9999    Median :11.00   Mode  :character   Median :4.000  
+##  Mean   :9999    Mean   :18.19                      Mean   :5.117  
+##  3rd Qu.:9999    3rd Qu.:16.00                      3rd Qu.:9.000  
+##  Max.   :9999    Max.   :99.00                      Max.   :9.000  
+##  NA&#39;s   :33534                                                     
+##      GRETNM         ESCIVM          NACIOM          ESCOLAM    
+##  Min.   :1.00   Min.   :1.000   Min.   :  31.0   Min.   :1.00  
+##  1st Qu.:9.00   1st Qu.:1.000   1st Qu.: 320.0   1st Qu.:1.00  
+##  Median :9.00   Median :1.000   Median : 320.0   Median :2.00  
+##  Mean   :7.29   Mean   :2.051   Mean   : 501.4   Mean   :3.21  
+##  3rd Qu.:9.00   3rd Qu.:2.000   3rd Qu.: 320.0   3rd Qu.:4.00  
+##  Max.   :9.00   Max.   :9.000   Max.   :9999.0   Max.   :9.00  
+##                                                                
 ##    CIUOMAD              OCUPAM        CAUDEF             ASISREC     
-##  Length:31228       Min.   :1212   Length:31228       Min.   :1.000  
-##  Class :character   1st Qu.:9711   Class :character   1st Qu.:1.000  
+##  Length:36767       Min.   :1212   Length:36767       Min.   :1.000  
+##  Class :character   1st Qu.:9712   Class :character   1st Qu.:1.000  
 ##  Mode  :character   Median :9999   Mode  :character   Median :1.000  
-##                     Mean   :9766                      Mean   :1.685  
+##                     Mean   :9784                      Mean   :2.128  
 ##                     3rd Qu.:9999                      3rd Qu.:3.000  
-##                     Max.   :9999                      Max.   :5.000  
+##                     Max.   :9999                      Max.   :9.000  
 ##                                                                      
-##     SITIOOCU         TOHITE         TOHINM          TOHIVI     
-##  Min.   :1.000   Min.   : 1.0   Min.   : 1.00   Min.   : 0.00  
-##  1st Qu.:1.000   1st Qu.: 3.0   1st Qu.: 1.00   1st Qu.: 1.00  
-##  Median :1.000   Median : 7.0   Median : 1.00   Median : 4.00  
-##  Mean   :2.897   Mean   :44.9   Mean   :26.51   Mean   :34.56  
-##  3rd Qu.:6.000   3rd Qu.:99.0   3rd Qu.:99.00   3rd Qu.:99.00  
-##  Max.   :9.000   Max.   :99.0   Max.   :99.00   Max.   :99.00  
-##                  NA&#39;s   :351    NA&#39;s   :142     NA&#39;s   :258</code></pre>
+##     SITIOOCU         TOHITE          TOHINM          TOHIVI      
+##  Min.   :1.000   Min.   :  0.0   Min.   :  0.0   Min.   :  0.00  
+##  1st Qu.:1.000   1st Qu.:  3.0   1st Qu.:  1.0   1st Qu.:  1.00  
+##  Median :1.000   Median :  8.0   Median :  1.0   Median :  4.00  
+##  Mean   :3.326   Mean   :101.2   Mean   :113.8   Mean   : 92.18  
+##  3rd Qu.:6.000   3rd Qu.: 99.0   3rd Qu.: 99.0   3rd Qu.: 99.00  
+##  Max.   :9.000   Max.   :999.0   Max.   :999.0   Max.   :999.00  
+##                  NA&#39;s   :351     NA&#39;s   :142     NA&#39;s   :258     
+##     PAISREM    
+##  Min.   :  84  
+##  1st Qu.: 320  
+##  Median : 320  
+##  Mean   :2565  
+##  3rd Qu.: 320  
+##  Max.   :9999  
+##  NA&#39;s   :3233</code></pre>
 <pre class="r"><code>write.csv(datatotal, &quot;./db/database.csv&quot;, row.names=FALSE)</code></pre>
 <p>Se importa una nueva tabla desde el nuevo archivo CSV</p>
 <pre class="r"><code>database &lt;- read.csv(&quot;./db/database.csv&quot;, stringsAsFactors = F)</code></pre>
+<p>Se filtra y crea una variable para analisis de incidencias anuales</p>
+<pre class="r"><code>byyear &lt;- database %&gt;% group_by(database$AÑOOCU) %&gt;% summarise(freq=n()) %&gt;% ungroup()
+arrange(byyear, desc(byyear$freq)) </code></pre>
+<pre><code>## # A tibble: 12 x 2
+##    `database$AÑOOCU`  freq
+##                &lt;int&gt; &lt;int&gt;
+##  1              2010  3377
+##  2              2013  3344
+##  3              2011  3266
+##  4              2014  3236
+##  5              2009  3233
+##  6              2016  3161
+##  7              2012  3157
+##  8              2015  3121
+##  9              2017  3033
+## 10              2018  2894
+## 11              2019  2639
+## 12              2020  2306</code></pre>
+<pre class="r"><code>histyearly &lt;-  hist(database$AÑOOCU, main=&quot;Decesos Fetales por Año&quot;,
+xlab=&quot;Año&quot;, xlim=c(2008,2020), ylab=&quot;Incidencias&quot;, col=&quot;red&quot;)
+text(histyearly$mids, histyearly$counts, labels=histyearly$counts)</code></pre>
+<p><img src="data:image/png;base64,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+8yupwd9/qi/ae+X2jClgQZ2tfClYp+v010fCezpXIvKQ44sKRho/2ys+p7W3YbuL2J/S7UUZMVUk8bjulqy/dCMbZ/Z9dT2qZl21fz4pNNyIV01PjfRFZzAns61qDzkyJKAgW5+snw5V78P3ncy2NJ9cKrLimO7Wu9r1Lp9n7n11P6pWXa1YzWdgV5//Kd6QjK4p/MsKh85siRgoOYfPaNqR72V81G55c3suno1qPWJ38oZ1tMdn5pjVzsmNNBrdPXr6+/zfe5OlarX6Okci8pHjiwJGCgAwDzBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUABAALBQAEAAsFAAQACwUAhMdZZ9t2n3pZ3y2zx+M+r1fZ2gNhgoJAWm5+yLHtqbvmyzGpuH6pToBUMFNKitMueU541/rn45VCdAq1goJAWq2zxfc8q80PSH68un+en8U8O1ytQCgYKSfHtJPvuXZY9OHQ/AAowUEiKdW6euYne+O3QHQG4wkAhMc6K0/ezbhopP4G/8dvm9fdZtrj3ttlp8/5RlmV3XzApD5HBQCElviyLe5XW3TRSYaD/fzMNX7vq5cP637fe7mwIQAIMFFJiVV7+zF2zmUYq72rqT8PnZ/gNnOlDXDBQSIjGOVftNFJpoIsnn642r7J6Y36Cv3icb3i95M5QiAwGCgmRn8Hfrv9fH1wWBlr/uKr8Mv9dfXja/QQQBwwUEqKZPSpss7rgWfxUH4xW10cbH613534niAkGCunQ3b/UPhBvXA6tDdSYom8OWAEigYFCOqyzwYzRwECNDY2lAsQCA4Vk6M2412fnNgNt596Lx5YwUIgIBgrJ0C271N2jxBEoHBIMFJJhZcwJNdNIzmuga+5jgrhgoJAK+Qm5cVfSqppGGhoos/AwHRgopEJ/Kfr6Js+hgXIfKEwHBgqp0D+eLM7hb9sMtPckEpdAISoYKCRC9/RRxbqcRrIYKM/Cw2RgoJAIq60ZocInn9oMlNWYYDIwUEiD7unNhrPiDN1moO16oFP3EdSBgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABIKBAgAEgoECAASCgQIABPL/AAyKbsyaLZcHAAAAAElFTkSuQmCC" width="672" /></p>
+<p>Analizando las incidencias de decesos fetales por año podemos observar que el año con m ayor número de incidencias es 2010 con 3377 decesos y una tendencia a la baja teniendo una reducción de un 31.71% en 2020.</p>
+<p>Se filtra y crea una variable para analisis de registros de decesos por depto.</p>
+<pre class="r"><code>bydept &lt;- database %&gt;% group_by(database$DEPOCU) %&gt;% summarise(freq=n()) %&gt;% ungroup()
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 1] &lt;- &#39;Guatemala&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 2] &lt;- &#39;El Progreso&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 3] &lt;- &#39;Sacatepéquez&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 4] &lt;- &#39;Chimaltenango&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 5] &lt;- &#39;Escuintla&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 6] &lt;- &#39;Santa Rosa&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 7] &lt;- &#39;Sololá&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 8] &lt;- &#39;Totonicapán&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 9] &lt;- &#39;Quetzaltenango&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 10] &lt;- &#39;Suchitepéquez&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 11] &lt;- &#39;Retalhuleu&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 12] &lt;- &#39;San Marcos&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 13] &lt;- &#39;Huehuetenango&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 14] &lt;- &#39;Quiché&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 15] &lt;- &#39;Baja Verapaz&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 16] &lt;- &#39;Alta Verapaz&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 17] &lt;- &#39;Petén&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 18] &lt;- &#39;Izabal&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 19] &lt;-  &#39;Zacapa&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 20] &lt;- &#39;Chiquimula&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 21] &lt;- &#39;Jalapa&#39;
+bydept$&#39;database$DEPOCU&#39;[bydept$&#39;database$DEPOCU&#39; == 22] &lt;- &#39;Jutiapa&#39;
+bydept &lt;- arrange(bydept, desc(bydept$freq)) 
+bydept</code></pre>
+<pre><code>## # A tibble: 22 x 2
+##    `database$DEPOCU`  freq
+##    &lt;chr&gt;             &lt;int&gt;
+##  1 Guatemala          9028
+##  2 Alta Verapaz       5085
+##  3 Quiché             2740
+##  4 Quetzaltenango     2708
+##  5 Chimaltenango      2055
+##  6 Sololá             2038
+##  7 Totonicapán        1852
+##  8 Huehuetenango      1625
+##  9 Escuintla          1574
+## 10 San Marcos         1376
+## # ... with 12 more rows</code></pre>
+<p>Segun la información obtenida en este resumen de datos personalizado, se observa una clara tendencia de mayor cantidad de descesos fetales en la capital (9028) teniendo una diferencia de 3943 con el siguiente de partamento, Baja Verapaz (5085)</p>
+<p>Ahora se filtra y crea una variable para analisis de registros de decesos en base a lugar de residencia de la madre</p>
+<pre class="r"><code>bydept2 &lt;- database %&gt;% group_by(database$DEPREM) %&gt;% summarise(freq=n()) %&gt;% ungroup()
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 1] &lt;- &#39;Guatemala&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 2] &lt;- &#39;El Progreso&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 3] &lt;- &#39;Sacatepéquez&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 4] &lt;- &#39;Chimaltenango&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 5] &lt;- &#39;Escuintla&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 6] &lt;- &#39;Santa Rosa&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 7] &lt;- &#39;Sololá&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 8] &lt;- &#39;Totonicapán&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 9] &lt;- &#39;Quetzaltenango&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 10] &lt;- &#39;Suchitepéquez&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 11] &lt;- &#39;Retalhuleu&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 12] &lt;- &#39;San Marcos&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 13] &lt;- &#39;Huehuetenango&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 14] &lt;- &#39;Quiché&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 15] &lt;- &#39;Baja Verapaz&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 16] &lt;- &#39;Alta Verapaz&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 17] &lt;- &#39;Petén&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 18] &lt;- &#39;Izabal&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 19] &lt;-  &#39;Zacapa&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 20] &lt;- &#39;Chiquimula&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 21] &lt;- &#39;Jalapa&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 22] &lt;- &#39;Jutiapa&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 23] &lt;- &#39;Extranjero&#39;
+bydept2$&#39;database$DEPREM&#39;[bydept2$&#39;database$DEPREM&#39; == 99] &lt;- &#39;Ignorado&#39;
+bydept2 &lt;- arrange(bydept2, desc(bydept2$freq)) 
+head(bydept2,24)</code></pre>
+<pre><code>## # A tibble: 24 x 2
+##    `database$DEPREM`  freq
+##    &lt;chr&gt;             &lt;int&gt;
+##  1 Guatemala          6345
+##  2 Alta Verapaz       4707
+##  3 Ignorado           3586
+##  4 Quiché             2817
+##  5 Quetzaltenango     2186
+##  6 Chimaltenango      2108
+##  7 Totonicapán        1977
+##  8 Sololá             1705
+##  9 Huehuetenango      1485
+## 10 San Marcos         1439
+## # ... with 14 more rows</code></pre>
+<p>En base a la información obtenida en este segundo reporte, se confirma que hay una tendencia entre el lugar del deceso fetal y el departamento de residencia de la madre, siendo la capital el primero y Baja Verapaz el segundo. Un dato interesante es la cantidad de “Ignorados” obtenidos, lo que da indicios de que personas pudieron haber tenido complicaciones en el embarazo o pérdidas mientras se encontraban en otro departamento.</p>
+<p>Se crea un registro personalizado de incidencias por nivel de escolaridad</p>
+<pre class="r"><code>byeduc &lt;- database %&gt;% group_by(database$ESCOLAM) %&gt;% summarise(freq=n()) %&gt;% ungroup()
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 1] &lt;- &#39;Primaria&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 2] &lt;- &#39;Básica&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 3] &lt;- &#39;Diversificado&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 4] &lt;- &#39;Universitario&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 5] &lt;- &#39;Post Grado&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 6] &lt;- &#39;Doctorado&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 9] &lt;- &#39;Ignorado&#39;
+byeduc$&#39;database$ESCOLAM&#39;[byeduc$&#39;database$ESCOLAM&#39; == 0] &lt;- &#39;Ninguno&#39;
+byeduc &lt;- arrange(byeduc, desc(byeduc$freq)) 
+head(byeduc,8)</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   `database$ESCOLAM`  freq
+##   &lt;chr&gt;              &lt;int&gt;
+## 1 Primaria           11940
+## 2 Básica             10888
+## 3 Ignorado            6267
+## 4 Universitario       3932
+## 5 Diversificado       3267
+## 6 Post Grado           470
+## 7 Doctorado              3</code></pre>
+<p>Se puede observar que existe una tendencia de embarazos resultantes en perdida entre personas que han unicamente cursado la educación de primaria y básicos. Con un gran numero de ‘ignorados’ que tienen una alta probabilidad de encontrarse en una de estas categorías</p>
+<pre class="r"><code>byage &lt;- data.frame(EDADM=c(database$EDADM))
+byage$EDADM[byage$EDADM &gt;= 10 &amp; byage$EDADM &lt;=15] &lt;- &#39;10-15 años&#39;
+byage$EDADM[byage$EDADM &gt; 15 &amp; byage$EDADM &lt;=20] &lt;- &#39;15-20 años&#39;
+byage$EDADM[byage$EDADM &gt; 20 &amp; byage$EDADM &lt;=25] &lt;- &#39;20-25 años&#39;
+byage$EDADM[byage$EDADM &gt; 25 &amp; byage$EDADM &lt;=30] &lt;- &#39;25-30 años&#39;
+byage$EDADM[byage$EDADM &gt; 30 &amp; byage$EDADM &lt;=35] &lt;- &#39;30-35 años&#39;
+byage$EDADM[byage$EDADM &gt; 35 &amp; byage$EDADM &lt;=40] &lt;- &#39;35-40 años&#39;
+byage$EDADM[byage$EDADM &gt; 40 &amp; byage$EDADM &lt;=45] &lt;- &#39;40-45 años&#39;
+byage$EDADM[byage$EDADM &gt; 45 &amp; byage$EDADM &lt;=50] &lt;- &#39;45-50 años&#39;
+byage$EDADM[byage$EDADM &gt; 50 &amp; byage$EDADM &lt;=55] &lt;- &#39;50-55 años&#39;
+byage$EDADM[byage$EDADM &gt; 55 &amp; byage$EDADM &lt;=60] &lt;- &#39;55-60 años&#39;
+byage$EDADM[byage$EDADM &gt;= 99] &lt;- &#39;Ignorado&#39;
+byage2 &lt;- byage %&gt;% group_by(byage$EDADM) %&gt;% summarise(freq=n()) %&gt;% ungroup()
+byage2 &lt;- arrange(byage2, desc(byage2$freq))
+byage2</code></pre>
+<pre><code>## # A tibble: 11 x 2
+##    `byage$EDADM`  freq
+##    &lt;chr&gt;         &lt;int&gt;
+##  1 20-25 años     7828
+##  2 25-30 años     6886
+##  3 15-20 años     6180
+##  4 30-35 años     6046
+##  5 35-40 años     4244
+##  6 Ignorado       3329
+##  7 40-45 años     1567
+##  8 10-15 años      590
+##  9 45-50 años       88
+## 10 50-55 años        8
+## 11 55-60 años        1</code></pre>
 
 
 
