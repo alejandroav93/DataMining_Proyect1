@@ -1,6 +1,6 @@
 ---
-title: "Proyecto1_MineriaDatos"
-author: "Alejandro Alvarez"
+title: "Proyecto 1 Mineria de Datos"
+author: "Grupo 6"
 date: "3/25/2022"
 output: html_document
 ---
@@ -8,18 +8,27 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
- 
-Se importan las librerías y paquetes necesarios para procesar, graficar y ordenar los datos de las bases de datos
+### Importación de paquetes/librerías 
+#### Se importan las librerías y paquetes necesarios para procesar, graficar y ordenar los datos de las bases de datos
 ```{r library/package import, warning=FALSE, message=FALSE}
 #install.packages('haven')
 library(haven)
 library(dplyr)
 library(tidyverse)
-
+library(cluster) #Para calcular la silueta
+library(e1071)#para cmeans
+library(mclust) #mixtures of gaussians
+library(fpc) #para hacer el plotcluster
+library(NbClust) #Para determinar el número de clusters óptimo
+library(factoextra) #Para hacer gráficos bonitos de clustering
+library(hopkins) #Para revisar si vale la pena hacer agrupamiento
+library(GGally) #Para hacer el conjunto de graficos
+library(FeatureImpCluster) #Para revisar la importancia de las variables en los grupos.
+library(pheatmap) #Para hacer mapa de calor
 ```
-
-#PUEDE SALTARSE A IMPORTACION DE BASE DE DATOS UNIFICADA# 
-Se importan las bases de datos de 2010 - 2019 [10 en total] de sus respectivos archivos de SPSS. Se agregaron datos faltantes y se restructuran nombres para que tengan los mismos nombres de columnas
+### Unificación de la base de datos
+## PUEDE SALTARSE A IMPORTACION DE BASE DE DATOS UNIFICADA# 
+#### Se importan las bases de datos de 2010 - 2019 [10 en total] de sus respectivos archivos de SPSS. Se agregaron datos faltantes y se restructuran nombres para que tengan los mismos nombres de columnas
 ```{r importación de datasets}
 data2009 <- read_sav('./db/2009.sav')
 names(data2009)<-toupper(names(data2009))
@@ -111,7 +120,8 @@ data2020 <- data.frame(append(data2020, c(OCUPAM=9999), after=25))
 data2020$EDADM[data2020$EDADM == 999] <- 99
 ```
 
-Se realiza la unión de todas las bases de datos en una sola tabla
+### Unión de las bases de datos
+#### Se realiza la unión de todas las bases de datos en una sola tabla
 ```{r join del set de datos completo,  warning=FALSE, message=FALSE}
 datatotal <- full_join(data2009, data2010)
 datatotal <- full_join(datatotal, data2011)
@@ -125,22 +135,24 @@ datatotal <- full_join(datatotal, data2018)
 datatotal <- full_join(datatotal, data2019)
 datatotal <- full_join(datatotal, data2020)
 ```
-
-Se realiza un resumen del set de datos y se exporta la base de datos completa a un .CSV para su facil manejo con el resto del equipo
+### Exportación del set de datos y un breve resumen gráfico
+#### Se realiza un resumen del set de datos y se exporta la base de datos completa a un .CSV para su facil manejo con el resto del equipo
 ```{r resumen del set de datos completo unificado }
 summary (datatotal)
 write.csv(datatotal, "./db/database.csv", row.names=FALSE)
 ```
-
-Se importa una nueva tabla desde el nuevo archivo CSV 
+### Nuevo set de datos unificado, escritura en un CSV
+#### Se importa una nueva tabla desde el nuevo archivo CSV 
 ```{r importación base de datos unificada}
 database <- read.csv("./db/database.csv", stringsAsFactors = F)
 ```
 
-Se filtra y crea una variable para analisis de incidencias anuales
+## INCIDENCIAS ANUALES 
+#### Se filtra y crea una variable para analisis de incidencias anuales
 ```{r}
 byyear <- database %>% group_by(database$AÑOOCU) %>% summarise(freq=n()) %>% ungroup()
 arrange(byyear, desc(byyear$freq)) 
+
 ```
 ```{r}
 histyearly <-  hist(database$AÑOOCU, main="Decesos Fetales por Año",
@@ -148,11 +160,11 @@ xlab="Año", xlim=c(2008,2020), ylab="Incidencias", col="red")
 text(histyearly$mids, histyearly$counts, labels=histyearly$counts)
 ```
 
+#### Analizando las incidencias de decesos fetales por año podemos observar que el año con m ayor número de incidencias es 2010 con 3377 decesos y una tendencia a la baja teniendo una reducción de un 31.71% en 2020.
 
-Analizando las incidencias de decesos fetales por año podemos observar que el año con m ayor número de incidencias es 2010 con 3377 decesos y una tendencia a la baja teniendo una reducción de un 31.71% en 2020.
 
-
-Se filtra y crea una variable para analisis de registros de decesos por depto.
+## INCIDENCIAS POR DEPARTAMENTO DE OCURRENCIA 
+#### Se filtra y crea una variable para analisis de registros de decesos por depto.
 ```{r}
 bydept <- database %>% group_by(database$DEPOCU) %>% summarise(freq=n()) %>% ungroup()
 bydept$'database$DEPOCU'[bydept$'database$DEPOCU' == 1] <- 'Guatemala'
@@ -181,9 +193,11 @@ bydept <- arrange(bydept, desc(bydept$freq))
 bydept
 ```
 
-Segun la información obtenida en este resumen de datos personalizado, se observa una clara tendencia de mayor cantidad de descesos fetales en la capital (9028) teniendo una diferencia de 3943 con el siguiente de partamento, Baja Verapaz (5085)
+#### Segun la información obtenida en este resumen de datos personalizado, se observa una clara tendencia de mayor cantidad de descesos fetales en la capital (9028) teniendo una diferencia de 3943 con el siguiente de partamento, Baja Verapaz (5085)
 
-Ahora se filtra y crea una variable para analisis de registros de decesos en base a lugar de residencia de la madre
+
+## INCIDENCIAS POR LUGAR DE RESIDENCIA DE LA MADRE
+#### Ahora se filtra y crea una variable para analisis de registros de decesos en base a lugar de residencia de la madre
 ```{r}
 bydept2 <- database %>% group_by(database$DEPREM) %>% summarise(freq=n()) %>% ungroup()
 bydept2$'database$DEPREM'[bydept2$'database$DEPREM' == 1] <- 'Guatemala'
@@ -214,11 +228,11 @@ bydept2 <- arrange(bydept2, desc(bydept2$freq))
 head(bydept2,24)
 ```
 
-En base a la información obtenida en este segundo reporte, se confirma que hay una tendencia entre el lugar del deceso fetal y el departamento de residencia de la madre, siendo la capital el primero y Baja Verapaz el segundo. Un dato interesante es la cantidad de "Ignorados" obtenidos, lo que da indicios de que personas pudieron haber tenido complicaciones en el embarazo o pérdidas mientras se encontraban en otro departamento.
+#### En base a la información obtenida en este segundo reporte, se confirma que hay una tendencia entre el lugar del deceso fetal y el departamento de residencia de la madre, siendo la capital el primero y Baja Verapaz el segundo. Un dato interesante es la cantidad de "Ignorados" obtenidos, lo que da indicios de que personas pudieron haber tenido complicaciones en el embarazo o pérdidas mientras se encontraban en otro departamento.
 
 
-
-Se crea un registro personalizado de incidencias por nivel de escolaridad
+## INCIDENCIAS POR NIVEL DE ESCOLARIDAD
+#### Se crea un registro personalizado de incidencias por nivel de escolaridad
 ```{r}
 byeduc <- database %>% group_by(database$ESCOLAM) %>% summarise(freq=n()) %>% ungroup()
 byeduc$'database$ESCOLAM'[byeduc$'database$ESCOLAM' == 1] <- 'Primaria'
@@ -232,11 +246,11 @@ byeduc$'database$ESCOLAM'[byeduc$'database$ESCOLAM' == 0] <- 'Ninguno'
 byeduc <- arrange(byeduc, desc(byeduc$freq)) 
 head(byeduc,8)
 ```
-Se puede observar que existe una tendencia de embarazos resultantes en perdida entre personas que han unicamente cursado la educación de primaria y básicos. Con un gran numero de 'ignorados' que tienen una alta probabilidad de encontrarse en una de estas categorías
+#### Se puede observar que existe una tendencia de embarazos resultantes en perdida entre personas que han unicamente cursado la educación de primaria y básicos. Con un gran numero de 'ignorados' que tienen una alta probabilidad de encontrarse en una de estas categorías
 
-
+## INCIDENCIAS SEGUN LA EDAD DE LA MADRE, EN INTERVALOS 
+#### Se crea un registro personalizado de incidencias por rangos de edad de la madre
 ```{r}
-
 byage <- data.frame(EDADM=c(database$EDADM))
 byage$EDADM[byage$EDADM >= 10 & byage$EDADM <=15] <- '10-15 años'
 byage$EDADM[byage$EDADM > 15 & byage$EDADM <=20] <- '15-20 años'
@@ -254,4 +268,105 @@ byage2 <- arrange(byage2, desc(byage2$freq))
 byage2
 ```
 
+#### Se puede observar que existe una alta concentración de decesos durante embarazos en las edades de entre 15 y 40 años, con datos atípicos fuera de este rango. Teniendo un 9% de los datos categorizados como ignorado.
 
+
+## INCIDENCIAS POR CAUSA, TOP 10
+```{r}
+bycause <- data.frame(Causa=c(database$CAUDEF))
+bycause$Causa[bycause$Causa == 'P95X'] <- 'Muerte fetal de causa no especificada'
+bycause$Causa[bycause$Causa == 'P209'] <- 'Hipoxia intrauterina, no especificada'
+bycause$Causa[bycause$Causa == 'P964'] <- 'Terminación del embarazo, feto y recién nacido'
+bycause$Causa[bycause$Causa == 'P073'] <- 'Otros recién nacidos pretérmino'
+bycause$Causa[bycause$Causa == 'Q899'] <- 'Malformación congénita, no especificada'
+bycause$Causa[bycause$Causa == 'Q897'] <- 'Malformaciones congénitas múltiples, no clasificadas en otra parte'
+bycause$Causa[bycause$Causa == 'P025'] <- 'Feto y recién nacido afectados por otra compresión del cordón umbilical'
+bycause$Causa[bycause$Causa == 'Q000'] <- 'Anencefalia'
+bycause$Causa[bycause$Causa == 'P021'] <- 'Feto y recién nacido afectados por otras formas de desprendimiento y de hemorragia placentarios'
+bycause$Causa[bycause$Causa == 'P000'] <- 'Feto y recién nacido afectados por trastornos hipertensivos de la madre'
+bycause <- bycause %>% group_by(bycause$Causa) %>% summarise(freq=n()) %>% ungroup()
+bycause <- arrange(bycause, desc(bycause$freq))
+
+head(bycause, 10)
+```
+
+#### Basándonos en los resultados arrojados por la clasificación de causas más cómnunes de decesis en fetos podemos observar que existe un sesgo bastante marcado entre las primeras dos causas y el resto. Teniendo un número alarmante de muertes sin una causa específicada y como segunda categoría decesos por hipoxia intrauterina, que puede deberse a diversos problemas de la mandre como deficiencia cardiorespiratoria, anemia, tensión de la madre, etc. 
+
+
+## Clustering del conjunto de datos
+#### Para el clustering se consideran las variables, departamento de ocurrencia/residencia, Año de Ocurrencia, Edad de la Madre y Escolaridad
+```{r}
+database2 <- fread("./db/database.csv", select = c("DEPREG","DEPOCU", "AÑOOCU", "EDADM", "ESCOLAM","DEPREM"))
+database3 <- fread("./db/database.csv", select = c("DEPREG","DEPOCU", "AÑOOCU", "EDADM", "ESCOLAM","DEPREM"))
+set.seed(111)
+database2<-database2[complete.cases("./db/database.csv")]
+database2<-scale(database2)
+database3<-database3[complete.cases("./db/database.csv")]
+database3<-scale(database3)
+```
+
+## Proceso de agrupamiento
+#### verificará por medio del estadístico de Hopkings si vale la pena el agrupamiento por lo que el dato obtenido debe ser diferente a 0.5.
+```{r estadistico de Hopkings, , message=FALSE,warning=FALSE}
+set.seed(111)
+hopkins(database2)
+```
+#### Dado que estadistico de Hopkings esta bastante alejado de 0.5 se puede inferir que  los datos no son aleatorios hay altas posibilidades de que sea factible el agrupamiento de las variables seleccionadas. Por lo que se realiza el VAT 
+```{r VAT , message=FALSE,warning=FALSE}
+db2_dist <- dist(database2[1:4000,])
+fviz_dist(db2_dist, show_labels = F)
+```
+
+
+
+
+#### Como se puede observar en la VAT sí se observan patrones por lo que es factible el agrupamiento, confirmando el valor obtenido con el estadístico de Hopkings.
+
+## Número de grupos o clusters
+#### Para elegir el número ideal de agrupamientos o clusters se utilizarán dos metodos:
+#### *Metódo de Codo:
+```{r método de Codo, message=FALSE,warning=FALSE}
+fviz_nbclust(database2[1:4000,], kmeans, method = "wss") +
+labs(subtitle = "Elbow method")
+```
+
+#### Según el resultado obtenido por este método, el número ideal de agrupaciones es de: 2
+
+#### *Método de Silueta
+```{r método de silueta}
+fviz_nbclust(database2[1:4000,], kmeans, method = "silhouette") +
+labs(subtitle = "Silhouette method")
+```
+
+#### Según el resultado obtenido por este método, el número ideal de agrupaciones es de: 2
+
+
+## K-medias
+#### Basándonos en ambos resultados, se utilizará el monto sugerido por el método de codo. (2 clusters)
+```{r, message=FALSE,warning=FALSE}
+means <- kmeans(database2[1:4000,], 2, iter.max =100)
+database2$means <- means$cluster
+means
+```
+#### Por lo que se puede decir que hay un 64.3% de cohesión entre variables
+
+```{r cardinalidad de los grupos km}
+means$size
+```
+#### La cardinalidad de los grupos muestra que los tamaños estan bastante equilibrados
+
+## Clustering Jerarquico
+```{r}
+hc<-hclust(db2_dist, method = "ward.D2") 
+plot(hc, cex=0.5, axes=FALSE) #Genera el dendograma
+rect.hclust(hc,k=2)
+```
+
+
+## Silueta de clustering
+```{r}
+silkm<-silhouette(means$cluster,dist(database3[1:4000,]))
+mean(silkm[,3]) 
+```
+
+#### El metodo de la silueta de clustering nos indica que tenemos un valor de 0.615, lo que nos indica que es una buena agrupación, pero podría ser mejor
