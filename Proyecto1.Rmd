@@ -230,6 +230,37 @@ head(bydept2,24)
 
 #### En base a la información obtenida en este segundo reporte, se confirma que hay una tendencia entre el lugar del deceso fetal y el departamento de residencia de la madre, siendo la capital el primero y Baja Verapaz el segundo. Un dato interesante es la cantidad de "Ignorados" obtenidos, lo que da indicios de que personas pudieron haber tenido complicaciones en el embarazo o pérdidas mientras se encontraban en otro departamento.
 
+## INCIDENCIAS POR TIPO DE ASISTENCIA RECIBIDA
+```{r}
+byassist <- database %>% group_by(database$ASISREC) %>% summarise(freq=n()) %>% ungroup()
+byassist$'database$ASISREC'[byassist$'database$ASISREC' == 1] <- 'Médica'
+byassist$'database$ASISREC'[byassist$'database$ASISREC' == 2] <- 'Paramédica'
+byassist$'database$ASISREC'[byassist$'database$ASISREC' == 3] <- 'Comadrona'
+byassist$'database$ASISREC'[byassist$'database$ASISREC' == 4] <- 'Empírica'
+byassist$'database$ASISREC'[byassist$'database$ASISREC' == 5] <- 'Ninguna'
+byassist$'database$ASISREC'[byassist$'database$ASISREC' == 9] <- 'Ignorado'
+byassist <- arrange(byassist, desc(byassist$freq)) 
+byassist
+```
+
+```{r}
+histassist <-  hist(database$ASISREC, main="Tipo de Asistencia por Deceso",
+xlab="Año", xlim=c(1,9), ylab="Incidencias", col="yellow")
+text(histassist$mids, histassist$counts, labels=histassist$counts)
+```
+
+Código | Asistencia Recibida
+------------- | -------------
+1 | Médica
+2 | Paramédica
+3 | Comadrona
+4 | Empírica
+5 | Ninguna
+9 | Ignorado
+
+
+#### Se puede observar que existe una mayoría de decesos fetales que son asistidos en centros médicos
+
 
 ## INCIDENCIAS POR NIVEL DE ESCOLARIDAD
 #### Se crea un registro personalizado de incidencias por nivel de escolaridad
@@ -270,6 +301,16 @@ byage2
 
 #### Se puede observar que existe una alta concentración de decesos durante embarazos en las edades de entre 15 y 40 años, con datos atípicos fuera de este rango. Teniendo un 9% de los datos categorizados como ignorado.
 
+## Regresión Lineal
+```{r}
+database4 <- fread("./db/database.csv", select = c("DEPREG","DEPOCU", "AÑOOCU", "EDADM", "ESCOLAM","DEPREM"))
+cor(database4)
+```
+```{r}
+regresion <- lm(DEPOCU ~., data = database4)
+summary(regresion)
+```
+#### Para nuestras correlaciones, vemos que existen correlaciones fuertes entre Departamento de ocurrencia con, departamento de registro y departamento de residencia de la mandre Entre la escolaridad de la madre y el departamento de residencia de la madre
 
 ## INCIDENCIAS POR CAUSA, TOP 10
 ```{r}
